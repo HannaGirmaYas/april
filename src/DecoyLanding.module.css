@@ -1,0 +1,51 @@
+.root {
+  min-height: 100dvh;
+  min-height: 100vh;
+  margin: 0;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: #0a0a0c;
+  color: #6a7a6a;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.68rem;
+  line-height: 1.45;
+  position: relative;
+  overflow: auto;
+}
+
+.scan {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.12;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.4) 2px,
+    rgba(0, 0, 0, 0.4) 4px
+  );
+}
+
+.term {
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.dim {
+  color: #4a5a4a;
+}
+
+.devOnly {
+  margin-top: 1.5rem;
+  font-size: 0.75rem;
+}
+
+.link {
+  color: #6a9a6a;
+}
+
+.link:hover {
+  color: #8aba8a;
+}

@@ -1,3 +1,14 @@
+/**
+ * Only this path mounts the live incident UI. Every other URL shows a decoy page.
+ * Optional query overrides (see `parseSessionParams` in `sessionParams.ts`):
+ * `followers` | `ig`, `account` | `handle` | `user`, `realName` | `real` | `legal`, `bd`
+ *
+ * Example:
+ * `?followers=1200&account=April&realName=Beza`
+ */
+export const sessionEntryPath =
+  "/gateway/v3/tor-relay/ir-2026/APR-SEC/incident/q9-m7-k2/live/tap/session/verify";
+
 /** Site copy — customize names and messages here */
 export const birthdayConfig = {
   recipientFirstName: "April",
@@ -22,4 +33,8 @@ export const birthdayConfig = {
     currency: "gratitude & good chaos",
     paidTo: "April",
   },
+  /** Final screen when `bd=false` */
+  aprilFoolsHeadline: "Happy April Fools",
+  aprilFoolsLine:
+    "The breach wasn’t real — the smile on your face when you read this can be.",
 };

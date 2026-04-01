@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { birthdayConfig } from "../config";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useSession } from "../SessionContext";
 import { HackShell } from "./HackShell";
 import styles from "./PrankPhase.module.css";
 
@@ -9,38 +9,46 @@ function useLatest<T>(value: T) {
   return ref;
 }
 
-const { recipientFirstName, realNameScare, instagramStartFollowers } = birthdayConfig;
-
-const TERMINAL_LINES: string[] = [
-  `[BOOT] kernel hardening… FAILED (0xDEADBEEF)`,
-  `INITIALIZING INTERCEPT // NODE: TOR-RELAY-Ω`,
-  `HANDSHAKE → victim_session_${recipientFirstName.toUpperCase()}_01`,
-  `EXFILTRATING DEVICE FINGERPRINT… SHA-512 MATCH`,
-  `GEO-IP TRIANGULATION… [REDACTED] ± 14m`,
-  `SOCIAL GRAPH INJECTION… Instagram API hook… ESTABLISHED`,
-  `CROSS_REFERENCE: PUBLIC_HANDLE → REAL_IDENTITY`,
-  `>>> ALIAS LOCK: LEGAL_NAME = "${realNameScare.toUpperCase()}" (99.7% confidence)`,
-  `WARNING: SUBJECT "${recipientFirstName.toUpperCase()}" — DOX PACKAGE READY FOR RELEASE`,
-  `WEBCAM SUBSYSTEM… ACCESS REQUESTED — BUFFER ARMED`,
-  `KEYLOGGER: capturing "${recipientFirstName}" typed passwords… [ACTIVE]`,
-  `RANSOM MODULE ARMED — PAYMENT WALLET GENERATING…`,
-  `ENCRYPTION WAVE: ████████████░░░░░░░░ 61%`,
-  `THREAT VECTOR: Session termination triggers queued data release to public index.`,
-  `FINAL LOCK: system_payload.exe — execution imminent`,
-];
-
-const THREAT_FLASHES = [
-  `CRITICAL: ${recipientFirstName.toUpperCase()} — WE SEE YOU.`,
-  `ALERT: SESSION TOKEN EXPIRING — PANIC RECOMMENDED.`,
-  `SYSTEM: EXFIL QUEUE PRIORITY = MAXIMUM.`,
-];
-
 type Props = {
   onCloseAttempt: () => void;
   onFollowersDrainComplete: () => void;
 };
 
 export function PrankPhase({ onCloseAttempt, onFollowersDrainComplete }: Props) {
+  const { recipientFirstName, realNameScare, instagramStartFollowers } = useSession();
+
+  const terminalLines = useMemo(
+    () =>
+      [
+        `[BOOT] kernel hardening… FAILED (0xDEADBEEF)`,
+        `INITIALIZING INTERCEPT // NODE: TOR-RELAY-Ω`,
+        `HANDSHAKE → victim_session_${recipientFirstName.toUpperCase()}_01`,
+        `EXFILTRATING DEVICE FINGERPRINT… SHA-512 MATCH`,
+        `GEO-IP TRIANGULATION… [REDACTED] ± 14m`,
+        `SOCIAL GRAPH INJECTION… Instagram API hook… ESTABLISHED`,
+        `CROSS_REFERENCE: PUBLIC_HANDLE → REAL_IDENTITY`,
+        `>>> ALIAS LOCK: LEGAL_NAME = "${realNameScare.toUpperCase()}" (99.7% confidence)`,
+        `WARNING: SUBJECT "${recipientFirstName.toUpperCase()}" — DOX PACKAGE READY FOR RELEASE`,
+        `WEBCAM SUBSYSTEM… ACCESS REQUESTED — BUFFER ARMED`,
+        `KEYLOGGER: capturing "${recipientFirstName}" typed passwords… [ACTIVE]`,
+        `RANSOM MODULE ARMED — PAYMENT WALLET GENERATING…`,
+        `ENCRYPTION WAVE: ████████████░░░░░░░░ 61%`,
+        `THREAT VECTOR: Session termination triggers queued data release to public index.`,
+        `FINAL LOCK: system_payload.exe — execution imminent`,
+      ] as string[],
+    [recipientFirstName, realNameScare]
+  );
+
+  const threatFlashes = useMemo(
+    () =>
+      [
+        `CRITICAL: ${recipientFirstName.toUpperCase()} — WE SEE YOU.`,
+        `ALERT: SESSION TOKEN EXPIRING — PANIC RECOMMENDED.`,
+        `SYSTEM: EXFIL QUEUE PRIORITY = MAXIMUM.`,
+      ] as string[],
+    [recipientFirstName]
+  );
+
   const [lines, setLines] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
   const [threatIdx, setThreatIdx] = useState(0);
@@ -52,11 +60,11 @@ export function PrankPhase({ onCloseAttempt, onFollowersDrainComplete }: Props) 
 
   useEffect(() => {
     const durationMs = 52_000;
-    const lineInterval = Math.max(320, Math.floor(durationMs / TERMINAL_LINES.length));
+    const lineInterval = Math.max(320, Math.floor(durationMs / terminalLines.length));
     let i = 0;
     const lineTimer = window.setInterval(() => {
-      if (i < TERMINAL_LINES.length) {
-        setLines((prev) => [...prev, TERMINAL_LINES[i]!]);
+      if (i < terminalLines.length) {
+        setLines((prev) => [...prev, terminalLines[i]!]);
         i += 1;
       } else {
         window.clearInterval(lineTimer);
@@ -74,7 +82,7 @@ export function PrankPhase({ onCloseAttempt, onFollowersDrainComplete }: Props) 
     }, tick);
 
     const threatTimer = window.setInterval(() => {
-      setThreatIdx((k) => (k + 1) % THREAT_FLASHES.length);
+      setThreatIdx((k) => (k + 1) % threatFlashes.length);
     }, 3800);
 
     const igIntro = window.setTimeout(() => {
@@ -92,7 +100,7 @@ export function PrankPhase({ onCloseAttempt, onFollowersDrainComplete }: Props) 
       window.clearTimeout(igIntro);
       window.clearTimeout(igStartDrain);
     };
-  }, []);
+  }, [terminalLines, threatFlashes.length]);
 
   useEffect(() => {
     if (igPhase !== "draining") return;
@@ -234,7 +242,7 @@ export function PrankPhase({ onCloseAttempt, onFollowersDrainComplete }: Props) 
         </div>
 
         <div className={styles.threatMarquee} role="status">
-          {THREAT_FLASHES[threatIdx]}
+          {threatFlashes[threatIdx]}
         </div>
       </div>
     </HackShell>

@@ -1,4 +1,4 @@
-import { birthdayConfig } from "../config";
+import { useSession } from "../SessionContext";
 import styles from "./TrapModal.module.css";
 
 type Props = {
@@ -7,6 +7,8 @@ type Props = {
 };
 
 export function TrapModal({ open, onPay }: Props) {
+  const { realNameScare } = useSession();
+
   if (!open) return null;
 
   return (
@@ -18,7 +20,7 @@ export function TrapModal({ open, onPay }: Props) {
         </h2>
         <p className={styles.lede}>
           We already mapped your device. Screen session logged. And yes — we know your real name is{" "}
-          <strong>{birthdayConfig.realNameScare}</strong>.
+          <strong>{realNameScare}</strong>.
         </p>
         <p className={styles.body}>
           Session remains elevated. Payment is required before the secure channel closes. Non-compliance
